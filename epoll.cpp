@@ -103,11 +103,13 @@ int  main (int argc, char **argv)
   for ( unsigned int i = 0; i < N; i++ )
   {
    if( (Events[i].events & EPOLLERR)
-    || (Events[i].events & EPOLLHUP) )
+    || (Events[i].events & EPOLLHUP) 
+    || (Events[i].events & EPOLLOUT) )
    {
     // если ошибка - закрываем
     shutdown (Events[i].data.fd, SHUT_RDWR);
     close (Events[i].data.fd);
+    std::cout << "connection terminated" << std::endl;
    }
    else if ( Events[i].data.fd == MasterSocket )
    {
@@ -151,40 +153,42 @@ int  main (int argc, char **argv)
    {
     char *recv_ptr2nline;
     char  recv_buffer[MSG_LIMIT];
-    
-    std::cout  << "!!!" << std::endl;
-    
     int recv_len;
     // читаем из сокета (read без signal)
     do
     {
+     std::cout  << "!!!" << std::endl;
      recv_len = recv (Events[i].data.fd, recv_buffer, (MSG_LIMIT - 1U), MSG_NOSIGNAL);
      if( !recv_len )
      { 
       std::cout  << "Nothing!" << std::endl;
+      // shutdown (Events[i].data.fd, SHUT_RDWR);
+      // close    (Events[i].data.fd);
+      // std::cout << "connection terminated" << std::endl;
       break;
       }
-     /*||*/
+     /* || */
      if( recv_len == -1 )
      {
+      std::cout  << "Error!" << std::endl;
       // завершаем соединение
       shutdown (Events[i].data.fd, SHUT_RDWR);
       close    (Events[i].data.fd);
       std::cout << "connection terminated" << std::endl;
-      // continue;//
+      // continue; //
       break;
      }
     
      recv_buffer[recv_len] = '\0';
-     std::cout  << "Here!" << std::endl; // */ << recv_buffer << std::endl;
-     recv_ptr2nline = (char*) memchr (recv_buffer, '\n', recv_len + 1);
+     std::cout  /* << "Here!" << std::endl; */ << recv_len << ' ' << recv_buffer << std::endl;
+     recv_ptr2nline = (char*) memchr (recv_buffer, '\n', recv_len);
      if ( !recv_ptr2nline )
       std::cout << ">> NULL\n";
      else
       std::cout << (recv_ptr2nline - recv_buffer);
       
      // парсим сообщения
-     while ( (recv_ptr2nline = (char*) memchr (recv_buffer, '\n', recv_len + 1)) )
+     while ( (recv_ptr2nline = (char*) memchr (recv_buffer, '\n', recv_len)) )
      {
       char    msg_line[MSG_LIMIT];
       size_t  msg_len = (++recv_ptr2nline - recv_buffer);
@@ -222,10 +226,16 @@ int  main (int argc, char **argv)
       std::cout << msg_line << std::endl;
      
       // to everybody
-      // for( unsignde int j = 1U; j < MAX_EVENTS; ++j )
-      // non-block sending
-      send (Events[i].data.fd, msg_line, msg_len, MSG_NOSIGNAL); // just echo
-      // !!! Check for -1
+      for( unsigned int j = 0U; j < N; ++j )
+      {
+       // non-block sending
+       if ( -1 == send (Events[j].data.fd, msg_line, msg_len, MSG_NOSIGNAL) )
+       {
+        shutdown (Events[j].data.fd, SHUT_RDWR);
+        close    (Events[j].data.fd);
+        std::cout << "connection terminated" << std::endl;
+       } 
+      }
 
       // msg_line[msg_len] = '\0'; 
       // std::cout /*<< "log: " */ << msg_line << std::endl;
@@ -249,8 +259,13 @@ int  main (int argc, char **argv)
 
       memcpy (user_buffer + user_buffer_len[i], recv_buffer, recv_len - shift);
 
-      send (Events[i].data.fd, user_buffer[i], (MSG_LIMIT - 1), MSG_NOSIGNAL); // just echo      
-      // !!! Check for -1
+      for( unsigned int j = 0U; j < N; ++j )
+       if( -1 == send (Events[j].data.fd, user_buffer[i], (MSG_LIMIT - 1), MSG_NOSIGNAL) )
+       {
+        shutdown (Events[j].data.fd, SHUT_RDWR);
+        close    (Events[j].data.fd);
+        std::cout << "connection terminated" << std::endl;
+       } 
       /*
       std::cout << "\n!!! 2.5 !!!\n";
       std::cout << ">> b_len: "   << user_buffer_len[i] << " buff_i: \"" << user_buffer[i] << "\"" << std::endl; */
