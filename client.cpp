@@ -56,15 +56,17 @@ int  main (int argc, char **argv)
  {
   if ( ch == '\n' )
   {
+   buf[strlen (buf)] = ch;
+   
    // SENDING MESSAGE TO SERVER
    if ( strlen (buf) )
     send (client, buf, BUFSIZE, 0);
    
    // RECIEVING MESSAGES FROM SERVER
    while ( recvfrom (client, buf, BUFSIZE, 0, (struct sockaddr*) &serv_addr, &addrlen) > 0 )
-    printf("Message from server: \"%s\"\n", buf);
+    printf("Message from server: %s", buf);
    
-   bzero (buf, BUFSIZE);
+   buf[0] = '\0';
    continue;
   }
   buf[strlen (buf)] = ch; 
