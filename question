@@ -1,0 +1,66 @@
+python test.py Test2
+
+Staring server.
+> accepted connection
+> !!!
+> Here!
+> >> NULL
+> >> NULL
+> connection terminated
+FStopping server.
+<exiting reader>
+Staring server.
+> accepted connection
+FStopping server.
+<exiting reader>
+Staring server.
+> accepted connection
+> accepted connection
+> !!!
+> Here!
+> 9
+> !!! 1 !!!
+> 
+> !!! 2 !!!
+> TEST-TEST
+> 
+> 
+> !!! 1 !!!
+> 
+> !!! 2 !!!
+> TEST-TEST
+> 
+> >> NULL
+> connection terminated
+> !!!
+> Here!
+> 9
+> !!! 1 !!!
+> 
+> !!! 2 !!!
+> TEST-TEST
+> 
+> >> NULL
+> connection terminated
+Stopping server.
+<exiting reader>
+.
+======================================================================
+FAIL: test_nosplit (__main__.Test2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 133, in test_nosplit
+    "Failed to wait for a test string in logs.")
+AssertionError: Failed to wait for a test string in logs.
+
+======================================================================
+FAIL: test_read1 (__main__.Test2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 121, in test_read1
+    "Failed to wait for a test string in logs.")
+AssertionError: Failed to wait for a test string in logs.
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.386s
+
