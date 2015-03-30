@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <algorithm>
 #include <set>
 
@@ -33,8 +33,8 @@ int  set_nonblock (int fd)
 
 int  main (int argc, char **argv)
 {
- // Слушает и принимает входящие соединения
- // отличается от остальных сокетов
+ // РЎР»СѓС€Р°РµС‚ Рё РїСЂРёРЅРёРјР°РµС‚ РІС…РѕРґСЏС‰РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
+ // РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ РѕСЃС‚Р°Р»СЊРЅС‹С… СЃРѕРєРµС‚РѕРІ
  int  MasterSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
  if ( MasterSocket == -1 )
  {
@@ -42,7 +42,7 @@ int  main (int argc, char **argv)
   return 1;
  }
  
- int  so_reuseaddr = 1; // манипулируем флагами, установленными на сокете.
+ int  so_reuseaddr = 1; // РјР°РЅРёРїСѓР»РёСЂСѓРµРј С„Р»Р°РіР°РјРё, СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹РјРё РЅР° СЃРѕРєРµС‚Рµ.
  if ( setsockopt (MasterSocket, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof (so_reuseaddr)) )
  {
   std::cout << strerror (errno) << std::endl;
@@ -55,7 +55,7 @@ int  main (int argc, char **argv)
  SockAddr.sin_port = htons (3100);
  SockAddr.sin_addr.s_addr = htonl (INADDR_ANY);
 
- // привязываем к сокету адрес
+ // РїСЂРёРІСЏР·С‹РІР°РµРј Рє СЃРѕРєРµС‚Сѓ Р°РґСЂРµСЃ
  int  Result = bind (MasterSocket, (struct sockaddr*) &SockAddr, sizeof (SockAddr));
  if ( Result == -1 )
  {
@@ -63,12 +63,12 @@ int  main (int argc, char **argv)
   return 1;
  }
 
- // не блокирующий режим, при мультиплексировании
+ // РЅРµ Р±Р»РѕРєРёСЂСѓСЋС‰РёР№ СЂРµР¶РёРј, РїСЂРё РјСѓР»СЊС‚РёРїР»РµРєСЃРёСЂРѕРІР°РЅРёРё
  set_nonblock (MasterSocket);
 
- // режим ожидание соединений - флажок ядра
- // и принимание соединения, буфер - backlock
- // принимает TCP запросы
+ // СЂРµР¶РёРј РѕР¶РёРґР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёР№ - С„Р»Р°Р¶РѕРє СЏРґСЂР°
+ // Рё РїСЂРёРЅРёРјР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ, Р±СѓС„РµСЂ - backlock
+ // РїСЂРёРЅРёРјР°РµС‚ TCP Р·Р°РїСЂРѕСЃС‹
  Result = listen (MasterSocket, SOMAXCONN);
  if ( Result == -1 )
  {
@@ -76,62 +76,62 @@ int  main (int argc, char **argv)
   return 1;
  }
 
- // Событие создания e-poll объекта
+ // РЎРѕР±С‹С‚РёРµ СЃРѕР·РґР°РЅРёСЏ e-poll РѕР±СЉРµРєС‚Р°
  struct epoll_event  Event;
  Event.data.fd = MasterSocket;
  Event.events = EPOLLIN | EPOLLET; // ET - trigger regime
- // ничего нового не придёт на сокет, пока не вычитать всё, что уже пришло.
+ // РЅРёС‡РµРіРѕ РЅРѕРІРѕРіРѕ РЅРµ РїСЂРёРґС‘С‚ РЅР° СЃРѕРєРµС‚, РїРѕРєР° РЅРµ РІС‹С‡РёС‚Р°С‚СЊ РІСЃС‘, С‡С‚Рѕ СѓР¶Рµ РїСЂРёС€Р»Рѕ.
 
  epoll_event *Events = (epoll_event*) calloc (MAX_EVENTS, sizeof (epoll_event));
- // Создаём объект EPoll - что бы мониторить изменения на сокетах внутри ядра ОС
+ // РЎРѕР·РґР°С‘Рј РѕР±СЉРµРєС‚ EPoll - С‡С‚Рѕ Р±С‹ РјРѕРЅРёС‚РѕСЂРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РЅР° СЃРѕРєРµС‚Р°С… РІРЅСѓС‚СЂРё СЏРґСЂР° РћРЎ
  int EPoll = epoll_create1 (0);
- // Добляем первый объект мониторинга - сокет в режиме получения соединений
+ // Р”РѕР±Р»СЏРµРј РїРµСЂРІС‹Р№ РѕР±СЉРµРєС‚ РјРѕРЅРёС‚РѕСЂРёРЅРіР° - СЃРѕРєРµС‚ РІ СЂРµР¶РёРјРµ РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕРµРґРёРЅРµРЅРёР№
  epoll_ctl (EPoll, EPOLL_CTL_ADD, MasterSocket, &Event);
 
  // ------------------------
- // Личный буфер каждого подключённого клента
+ // Р›РёС‡РЅС‹Р№ Р±СѓС„РµСЂ РєР°Р¶РґРѕРіРѕ РїРѕРґРєР»СЋС‡С‘РЅРЅРѕРіРѕ РєР»РµРЅС‚Р°
  char  user_buffer[USR_LIMIT][MSG_LIMIT] = {};
  size_t       user_buffer_len[MSG_LIMIT] = {};
  // ------------------------
  
  while (true)
  {
-  // Мультиплексирование - это когда есть
-  // куча дескрипторов и мы ждём разных событий, которые не должны быть однородны.
-  // Мы не обязаны писать один код для всех случаев, но нам нужна дифференциация...
+  // РњСѓР»СЊС‚РёРїР»РµРєСЃРёСЂРѕРІР°РЅРёРµ - СЌС‚Рѕ РєРѕРіРґР° РµСЃС‚СЊ
+  // РєСѓС‡Р° РґРµСЃРєСЂРёРїС‚РѕСЂРѕРІ Рё РјС‹ Р¶РґС‘Рј СЂР°Р·РЅС‹С… СЃРѕР±С‹С‚РёР№, РєРѕС‚РѕСЂС‹Рµ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕРґРЅРѕСЂРѕРґРЅС‹.
+  // РњС‹ РЅРµ РѕР±СЏР·Р°РЅС‹ РїРёСЃР°С‚СЊ РѕРґРёРЅ РєРѕРґ РґР»СЏ РІСЃРµС… СЃР»СѓС‡Р°РµРІ, РЅРѕ РЅР°Рј РЅСѓР¶РЅР° РґРёС„С„РµСЂРµРЅС†РёР°С†РёСЏ...
   int  N = epoll_wait (EPoll, Events, MAX_EVENTS, -1); 
   for ( unsigned int i = 0; i < N; i++ )
   {
    if( (Events[i].events & EPOLLERR)
     || (Events[i].events & EPOLLHUP) )
    {
-    // если ошибка - закрываем
+    // РµСЃР»Рё РѕС€РёР±РєР° - Р·Р°РєСЂС‹РІР°РµРј
     shutdown (Events[i].data.fd, SHUT_RDWR);
     close (Events[i].data.fd);
    }
    else if ( Events[i].data.fd == MasterSocket )
    {
     int  SlaveSocket;
-    // Принимаем соединение
+    // РџСЂРёРЅРёРјР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
     while ( (SlaveSocket = accept (MasterSocket, 0, 0)) != -1 )
     {
-     int  so_reuseaddr = 1; // манипулируем флагами, установленными на сокете.
+     int  so_reuseaddr = 1; // РјР°РЅРёРїСѓР»РёСЂСѓРµРј С„Р»Р°РіР°РјРё, СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹РјРё РЅР° СЃРѕРєРµС‚Рµ.
      if ( setsockopt (SlaveSocket, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof (so_reuseaddr)) )
      {
       std::cout << strerror (errno) << std::endl;
       return 1;
      }
 
-     // слушаем на чтение и на запись
+     // СЃР»СѓС€Р°РµРј РЅР° С‡С‚РµРЅРёРµ Рё РЅР° Р·Р°РїРёСЃСЊ
      set_nonblock (SlaveSocket);
 
-     // cоздаём под него epoll
+     // cРѕР·РґР°С‘Рј РїРѕРґ РЅРµРіРѕ epoll
      struct epoll_event  Event;
      Event.data.fd = SlaveSocket;
-     Event.events = EPOLLIN | EPOLLET;  // ET - читать до нуля и писать до нуля
+     Event.events = EPOLLIN | EPOLLET;  // ET - С‡РёС‚Р°С‚СЊ РґРѕ РЅСѓР»СЏ Рё РїРёСЃР°С‚СЊ РґРѕ РЅСѓР»СЏ
     
-     // EPoll - файловый десериптор на структурку данных на события
-     // EPOLL_CTL_ADD - изменить эту структурку
+     // EPoll - С„Р°Р№Р»РѕРІС‹Р№ РґРµСЃРµСЂРёРїС‚РѕСЂ РЅР° СЃС‚СЂСѓРєС‚СѓСЂРєСѓ РґР°РЅРЅС‹С… РЅР° СЃРѕР±С‹С‚РёСЏ
+     // EPOLL_CTL_ADD - РёР·РјРµРЅРёС‚СЊ СЌС‚Сѓ СЃС‚СЂСѓРєС‚СѓСЂРєСѓ
      epoll_ctl (EPoll, EPOLL_CTL_ADD, SlaveSocket, &Event);
 
      // logging
@@ -152,19 +152,19 @@ int  main (int argc, char **argv)
     char *recv_ptr2nline;
     char  recv_buffer[MSG_LIMIT];    
     
-    // читаем из сокета (read без signal)
+    // С‡РёС‚Р°РµРј РёР· СЃРѕРєРµС‚Р° (read Р±РµР· signal)
     int recv_len = recv (Events[i].data.fd, recv_buffer, (MSG_LIMIT - 1U), MSG_NOSIGNAL);
     // std::cout << recv_buffer << std::endl;
     if( !recv_len || recv_len == -1 )
     {
-     // завершаем соединение
+     // Р·Р°РІРµСЂС€Р°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
      shutdown (Events[i].data.fd, SHUT_RDWR);
      close    (Events[i].data.fd);
      std::cout << "connection terminated" << std::endl;
      continue;
     }
 
-    // парсим сообщения
+    // РїР°СЂСЃРёРј СЃРѕРѕР±С‰РµРЅРёСЏ
     while ( (recv_ptr2nline = (char*) memchr (recv_buffer, '\n', recv_len)) )
     {
      char    msg_line[MSG_LIMIT];
