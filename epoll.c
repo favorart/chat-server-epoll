@@ -446,16 +446,3 @@ FREE_ALL:;
   return 0;
 }
 
-
-#ifdef DEBUG
-{
-  // Debug info
-  recv_buffer[recv_length] = '\0';
-  printf ("!!!\nrecv_length: %d\n recv_buffer: '%s'\n", recv_length, recv_buffer);
-
-  char *ret_ptr;
-  printf ("%s%d\n", (ret_ptr = memchr (recv_buffer, '\n', recv_length)) ?
-          ("\\n not found, \n") : ("\\n found, position: "),
-          (ret_ptr) ? (ret_ptr - recv_buffer) : (-1));
-}
-#endif // DEBUG
