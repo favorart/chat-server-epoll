@@ -1,0 +1,38 @@
+======================================================================
+ERROR: test_communicate (__main__.Test6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 236, in test_communicate
+    l = c1f.readline()
+  File "/usr/lib/python2.7/socket.py", line 447, in readline
+    data = self._sock.recv(self._rbufsize)
+timeout: timed out
+
+======================================================================
+FAIL: test_nosplit (__main__.Test2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 133, in test_nosplit
+    "Failed to wait for a test string in logs.")
+AssertionError: Failed to wait for a test string in logs.
+
+======================================================================
+FAIL: test_read1 (__main__.Test2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 121, in test_read1
+    "Failed to wait for a test string in logs.")
+AssertionError: Failed to wait for a test string in logs.
+
+======================================================================
+FAIL: test_readMulti (__main__.Test2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 145, in test_readMulti
+    "Failed to wait for a test string in logs.")
+AssertionError: Failed to wait for a test string in logs.
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.607s
+
+FAILED (failures=3, errors=1)
