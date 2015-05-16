@@ -82,7 +82,7 @@ int  messager_connection_accept (struct messager_client *User, int EPoll, int Sl
   printf ("accepted connection\n");
   fflush (stdout);
 
-  fprintf (stderr, "accepted connection\n");
+  // fprintf (stderr, "accepted connection\n");
   //--------------------------------
   char welcome[] = "Welcome\n";
   return messager_client_send_other (User, &Event, 1, welcome, strlen (welcome));
@@ -97,7 +97,7 @@ int  messager_connection_close  (struct messager_client *User, struct epoll_even
   printf ("connection terminated\n");
   fflush (stdout);
 
-  fprintf (stderr, "connection terminated\n");
+  // fprintf (stderr, "connection terminated\n");
   //--------------------------------
   messager_client_clear (User, CLR_IN | CLR_OUT);
   //--------------------------------
@@ -283,8 +283,7 @@ int  messager_client_send_other (struct messager_client *Users, struct epoll_eve
   printf ("message = '%s'\n", msg_buffer);
   fflush (stdout);
 
-  fprintf ( stderr, "message = '%s'\n", msg_buffer);
-
+  //fprintf ( stderr, "message = '%s'\n", msg_buffer);
   //--------------------------------
   return 0;
 }
@@ -391,7 +390,7 @@ int  main (int argc, char **argv)
       if ( (Events[i].events & EPOLLERR)
         || (Events[i].events & EPOLLHUP) )
       {
-        fprintf (stderr, "err\n");
+        // fprintf (stderr, "err\n");
         //--------------------------------
         /* error: disconnect */
         messager_connection_close (&Users[i], &Events[i]);
@@ -403,7 +402,7 @@ int  main (int argc, char **argv)
         int SlaveSocket;
         while ( (SlaveSocket = accept (MasterSocket, 0, 0)) != -1 )
         {
-          fprintf (stderr, "acc\n");
+          // fprintf (stderr, "acc\n");
           //--------------------------------
           /* Cлушаем на чтение и на запись */
           set_nonblock (SlaveSocket);
